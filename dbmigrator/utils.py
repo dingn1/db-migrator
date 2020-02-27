@@ -232,15 +232,7 @@ def get_pending_migrations(migration_directories, cursor, import_modules=False,
 
 
 def compare_schema(db_connection_string, callback, *args, **kwargs):
-    old_schema = subprocess.check_output(
-        ['pg_dump', '-s', db_connection_string]).decode('utf-8')
     callback(*args, **kwargs)
-    new_schema = subprocess.check_output(
-        ['pg_dump', '-s', db_connection_string]).decode('utf-8')
-    logger.info(''.join(list(
-        difflib.unified_diff(old_schema.splitlines(True),
-                             new_schema.splitlines(True),
-                             n=10))).encode('utf-8'))
 
 
 def run_migration(cursor, version, migration_name, migration,
@@ -266,6 +258,7 @@ def run_migration(cursor, version, migration_name, migration,
         # not a repeat migration
         pass
 
+    print('Running migration {} {}'.format(version, migration_name))
     logger.info('Running migration {} {}'.format(version, migration_name))
     migration.up(cursor)
     mark_migration(cursor, version, True)
